@@ -29,7 +29,7 @@ namespace ParkyAPIApp.Repository.IRepository
 
         public bool NationalParkExists(string name)
         {
-            var value = _db.NationalParks.Any(p =>
+            var value = _db.NationalParks.ToList().Any(p =>
                 string.Equals(p.Name.Trim(), name.Trim(), StringComparison.CurrentCultureIgnoreCase));
             return value;
         }
