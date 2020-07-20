@@ -42,13 +42,13 @@ namespace ParkyAPIApp
                         Title = "Parky API",
                         Version = "1",
                         Description = "Udemy Parky API",
-                        Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                        Contact = new OpenApiContact
                         {
                             Email = "bhrugen.udemy@gmail.com",
                             Name = "Bhrugen Patel",
                             Url = new Uri("https://www.bhrugen.com"),
                         },
-                        License = new Microsoft.OpenApi.Models.OpenApiLicense
+                        License = new OpenApiLicense
                         {
                             Name = "MIT License",
                             Url = new Uri("https://en.wikipedia.org/wiki/MIT License")
