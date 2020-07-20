@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace ParkyAPIApp.Migrations
+namespace ParkyAPIApp.Data.Migrations
 {
     public partial class AddNationalParkToDb : Migration
     {

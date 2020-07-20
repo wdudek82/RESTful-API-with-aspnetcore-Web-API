@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ParkyAPIApp.Data;
 
-namespace ParkyAPIApp.Migrations
+namespace ParkyAPIApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20200716205137_AddNationalParkToDb")]

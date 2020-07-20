@@ -1,7 +1,6 @@
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ParkyAPIApp.Data;
 using ParkyAPIApp.Models;
 using ParkyAPIApp.Models.Dtos;
 using ParkyAPIApp.Repository.IRepository;
@@ -15,12 +14,16 @@ namespace ParkyAPIApp.Controllers
         private readonly INationalParkRepository _npRepo;
         private readonly IMapper _mapper;
 
-        public NationalParksController(ApplicationDbContext db, INationalParkRepository npRepo, IMapper mapper)
+        public NationalParksController(INationalParkRepository npRepo, IMapper mapper)
         {
             _npRepo = npRepo;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Get list of national parks
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult GetNationalParks()
         {
@@ -32,6 +35,11 @@ namespace ParkyAPIApp.Controllers
             return Ok(nationalParksDto);
         }
 
+        /// <summary>
+        /// Get individual national park
+        /// </summary>
+        /// <param name="id">The Id of the National Park</param>
+        /// <returns></returns>
         [HttpGet("{id:int}", Name = "GetNationalPark")]
         public IActionResult GetNationalPark(int id)
         {
@@ -70,6 +78,43 @@ namespace ParkyAPIApp.Controllers
             }
 
             return CreatedAtRoute("GetNationalPark", new {id = nationalPark.Id}, nationalPark);
+        }
+
+        [HttpPatch("{id:int}", Name = "UpdateNationalPark")]
+        public IActionResult UpdateNationalPark(int id, [FromBody] NationalParkDto nationalParkDto)
+        {
+            if (nationalParkDto == null || id != nationalParkDto.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var nationalPark = _mapper.Map<NationalPark>(nationalParkDto);
+            if (!_npRepo.UpdateNationalPark(nationalPark))
+            {
+                ModelState.AddModelError("message",
+                    $"Something went wrong when updating the record {nationalPark.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:int}", Name = "DeleteNationalPark")]
+        public IActionResult DeleteNationalPark(int id)
+        {
+            if (!_npRepo.NationalParkExists(id))
+            {
+                return NotFound();
+            }
+
+            var nationalPark = _npRepo.GetNationalPark(id);
+            if (!_npRepo.DeleteNationalPark(nationalPark))
+            {
+                ModelState.AddModelError("", $"Something went wrong when deleting the record {nationalPark.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }

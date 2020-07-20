@@ -34,7 +34,7 @@ namespace ParkyAPIApp.Repository.IRepository
             return value;
         }
 
-        public bool NationalParkExits(int id)
+        public bool NationalParkExists(int id)
         {
            return _db.NationalParks.Any(p => p.Id == id);
         }
