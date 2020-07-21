@@ -1,3 +1,3 @@
 #!/bin/bash
 
-dotnet-ef.exe -v
+dotnet-ef -p ParkyAPIApp -v $@ 
