@@ -1,7 +1,9 @@
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ParkyAPIApp.Models;
 using ParkyAPIApp.Models.Dtos;
 using ParkyAPIApp.Repository.IRepository;
 
@@ -9,6 +11,7 @@ namespace ParkyAPIApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class TrailsController : ControllerBase
     {
         private readonly ITrailRepository _trailRepo;
@@ -20,7 +23,12 @@ namespace ParkyAPIApp.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Get list of trails
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(List<TrailDto>))]
         public IActionResult GetTrails()
         {
             var trails = _trailRepo.GetTrails();
@@ -30,7 +38,14 @@ namespace ParkyAPIApp.Controllers
             return Ok(trailsDto);
         }
 
-        [HttpGet("id:int")]
+        /// <summary>
+        /// Get individual trail
+        /// </summary>
+        /// <param name="id">The Id of the trail</param>
+        /// <returns></returns>
+        [HttpGet("id:int", Name = "GetTrail")]
+        [ProducesResponseType(200, Type = typeof(Trail))]
+        [ProducesResponseType(404)]
         public IActionResult GetTrail(int id)
         {
             var trail = _trailRepo.GetTrail(id);
@@ -40,25 +55,94 @@ namespace ParkyAPIApp.Controllers
                 return NotFound();
             }
 
-            return Ok(trail);
+            var trailDto = _mapper.Map<TrailDto>(trail);
+
+            return Ok(trailDto);
         }
 
+        // [Route("NationalPark/{nationalParkId:int}")]
+        // [HttpGet]
+        // public IActionResult GetTrailsInNationalPark(int nationalParkId)
+        // {
+        //     var nationalParkTrails = _trailRepo.GetTrailsInNationalPark(nationalParkId);
+        //     var trailsDto = nationalParkTrails
+        //         .Select(trail => _mapper.Map<TrailDto>(trail))
+        //         .ToList();
+        //     return Ok(trailsDto);
+        // }
+
         [HttpPost]
-        public IActionResult CreateTrail([FromBody] TrailDto trailDto)
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TrailDto))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesDefaultResponseType]
+        public IActionResult CreateTrail([FromBody] TrailUpsertDto trailUpsertDto)
         {
-            throw new NotImplementedException();
+            if (trailUpsertDto == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_trailRepo.TrailExists(trailUpsertDto.Name))
+            {
+                ModelState.AddModelError("Message", "Trail Exists!");
+                return NotFound(ModelState);
+            }
+
+            var trail = _mapper.Map<Trail>(trailUpsertDto);
+            var created = _trailRepo.CreateTrail(trail);
+
+            if (!created)
+            {
+                ModelState.AddModelError("Message", $"Something went wrong when saving trail {trail.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return CreatedAtRoute("GetTrail", new {id = trail.Id}, trail);
         }
 
         [HttpPatch("id:int")]
-        public IActionResult UpdateTrail([FromBody] TrailDto trailDto, int id)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesDefaultResponseType]
+        public IActionResult UpdateTrail(int id, [FromBody] TrailUpsertDto trailUpsertDto)
         {
-            throw new NotImplementedException();
+            if (trailUpsertDto == null || id != trailUpsertDto.Id)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var trail = _mapper.Map<Trail>(trailUpsertDto);
+            if (!_trailRepo.UpdateTrail(trail))
+            {
+                ModelState.AddModelError("Message", $"Something when wrong when updating the record {trail.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
 
         [HttpDelete("id:int")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public IActionResult DeleteTrail(int id)
         {
-            throw new NotImplementedException();
+            if (!_trailRepo.TrailExists(id))
+            {
+                return NotFound();
+            }
+
+            var trail = _trailRepo.GetTrail(id);
+            if (!_trailRepo.DeleteTrail(trail))
+            {
+                ModelState.AddModelError("Message", $"Something went wrong when deleting trail {trail.Name}");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
         }
     }
 }
