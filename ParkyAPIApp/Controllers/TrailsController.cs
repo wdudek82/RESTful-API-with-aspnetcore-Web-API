@@ -76,20 +76,20 @@ namespace ParkyAPIApp.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public IActionResult CreateTrail([FromBody] TrailUpsertDto trailUpsertDto)
+        public IActionResult CreateTrail([FromBody] TrailCreateDto trailCreateDto)
         {
-            if (trailUpsertDto == null)
+            if (trailCreateDto == null)
             {
                 return BadRequest(ModelState);
             }
 
-            if (_trailRepo.TrailExists(trailUpsertDto.Name))
+            if (_trailRepo.TrailExists(trailCreateDto.Name))
             {
                 ModelState.AddModelError("Message", "Trail Exists!");
                 return NotFound(ModelState);
             }
 
-            var trail = _mapper.Map<Trail>(trailUpsertDto);
+            var trail = _mapper.Map<Trail>(trailCreateDto);
             var created = _trailRepo.CreateTrail(trail);
 
             if (!created)
@@ -106,14 +106,14 @@ namespace ParkyAPIApp.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
-        public IActionResult UpdateTrail(int id, [FromBody] TrailUpsertDto trailUpsertDto)
+        public IActionResult UpdateTrail(int id, [FromBody] TrailUpdateDto trailUpdateDto)
         {
-            if (trailUpsertDto == null || id != trailUpsertDto.Id)
+            if (trailUpdateDto == null || id != trailUpdateDto.Id)
             {
                 return BadRequest(ModelState);
             }
 
-            var trail = _mapper.Map<Trail>(trailUpsertDto);
+            var trail = _mapper.Map<Trail>(trailUpdateDto);
             if (!_trailRepo.UpdateTrail(trail))
             {
                 ModelState.AddModelError("Message", $"Something when wrong when updating the record {trail.Name}");
