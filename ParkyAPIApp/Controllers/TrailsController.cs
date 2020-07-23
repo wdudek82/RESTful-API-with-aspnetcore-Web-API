@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
@@ -11,6 +12,7 @@ namespace ParkyAPIApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiExplorerSettings(GroupName = "ParkyOpenAPISpecTrails")]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public class TrailsController : ControllerBase
     {
@@ -108,7 +110,8 @@ namespace ParkyAPIApp.Controllers
         [ProducesDefaultResponseType]
         public IActionResult UpdateTrail(int id, [FromBody] TrailUpdateDto trailUpdateDto)
         {
-            if (trailUpdateDto == null || id != trailUpdateDto.Id)
+            Console.WriteLine($"id: {id}, trailUpdateDto.Id: {trailUpdateDto.Id}");
+            if (id != trailUpdateDto.Id && id > 0)
             {
                 return BadRequest(ModelState);
             }
