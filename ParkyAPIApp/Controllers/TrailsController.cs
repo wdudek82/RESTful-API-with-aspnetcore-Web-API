@@ -46,7 +46,7 @@ namespace ParkyAPIApp.Controllers
         /// </summary>
         /// <param name="id">The Id of the trail</param>
         /// <returns></returns>
-        [HttpGet("id:int", Name = "GetTrail")]
+        [HttpGet("{id:int}", Name = "GetTrail")]
         [ProducesResponseType(200, Type = typeof(Trail))]
         [ProducesResponseType(404)]
         public IActionResult GetTrail(int id)
@@ -63,16 +63,29 @@ namespace ParkyAPIApp.Controllers
             return Ok(trailDto);
         }
 
-        // [Route("NationalPark/{nationalParkId:int}")]
-        // [HttpGet]
-        // public IActionResult GetTrailsInNationalPark(int nationalParkId)
-        // {
-        //     var nationalParkTrails = _trailRepo.GetTrailsInNationalPark(nationalParkId);
-        //     var trailsDto = nationalParkTrails
-        //         .Select(trail => _mapper.Map<TrailDto>(trail))
-        //         .ToList();
-        //     return Ok(trailsDto);
-        // }
+        /// <summary>
+        /// Get national park trails
+        /// </summary>
+        /// <param name="nationalParkId">The Id of the national park</param>
+        /// <returns></returns>
+        [HttpGet("nationalPark/{nationalParkId:int}", Name = "GetTrailsInNationalPark")]
+        [ProducesResponseType(200, Type = typeof(Trail))]
+        [ProducesResponseType(404)]
+        public IActionResult GetTrailsInNationalPark(int nationalParkId)
+        {
+            var trails = _trailRepo.GetTrailsInNationalPark(nationalParkId);
+
+            if (trails == null)
+            {
+                return NotFound();
+            }
+
+            var trailsDto = trails
+                .Select(trail => _mapper.Map<TrailDto>(trail))
+                .ToList();
+
+            return Ok(trailsDto);
+        }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TrailDto))]
@@ -104,7 +117,7 @@ namespace ParkyAPIApp.Controllers
             return CreatedAtRoute("GetTrail", new {id = trail.Id}, trail);
         }
 
-        [HttpPatch("id:int")]
+        [HttpPatch("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -127,7 +140,7 @@ namespace ParkyAPIApp.Controllers
             return NoContent();
         }
 
-        [HttpDelete("id:int")]
+        [HttpDelete("{id:int}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
