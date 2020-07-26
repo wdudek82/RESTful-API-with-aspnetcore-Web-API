@@ -1,10 +1,17 @@
 using System.ComponentModel.DataAnnotations;
-using static ParkyAPIApp.Models.Trail;
 
-namespace ParkyAPIApp.Models.Dtos
+namespace ParkyWeb.Models
 {
-    public class TrailDto
+    public class Trail
     {
+        public enum DifficultyType
+        {
+            Easy,
+            Moderate,
+            Difficult,
+            Expert
+        }
+
         public int Id { get; set; }
 
         [Required]
@@ -17,8 +24,6 @@ namespace ParkyAPIApp.Models.Dtos
 
         public int NationalParkId { get; set; }
 
-        public NationalParkDto NationalPark { get; set; }
-
-        // public DateTime DateCreated { get; set; }
+        public NationalPark NationalPark { get; set; }
     }
 }
