@@ -42,15 +42,9 @@ namespace ParkyWeb.Repository
             }
 
             var client = _clientFactory.CreateClient();
-            HttpResponseMessage response = await client.SendAsync(request);
-            if (response.StatusCode == HttpStatusCode.Created)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            var response = await client.SendAsync(request);
+
+            return response.StatusCode == HttpStatusCode.Created;
         }
 
         public Task<bool> UpdateAsync(string url, T objToUpdate)
@@ -58,9 +52,14 @@ namespace ParkyWeb.Repository
             throw new System.NotImplementedException();
         }
 
-        public Task<bool> DeleteAsync(string url, int id)
+        public async Task<bool> DeleteAsync(string url, int id)
         {
-            throw new System.NotImplementedException();
+            var request = new HttpRequestMessage(HttpMethod.Delete, $"{url}{id}");
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            return response.StatusCode == HttpStatusCode.NoContent;
         }
     }
 }
