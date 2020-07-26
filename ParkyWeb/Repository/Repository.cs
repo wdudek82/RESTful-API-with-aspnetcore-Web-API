@@ -18,14 +18,30 @@ namespace ParkyWeb.Repository
             _clientFactory = clientFactory;
         }
 
-        public Task<T> GetAsync(string url, int id)
+        public async Task<T> GetAsync(string url, int id)
         {
-            throw new System.NotImplementedException();
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{url}{id}");
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            if (response.StatusCode != HttpStatusCode.OK) return null;
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<T>(jsonString);
         }
 
-        public Task<IEnumerable<T>> GetAllAsync(string url)
+        public async Task<IEnumerable<T>> GetAllAsync(string url)
         {
-            throw new System.NotImplementedException();
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            if (response.StatusCode != HttpStatusCode.OK) return null;
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+
+            return JsonConvert.DeserializeObject<IEnumerable<T>>(jsonString);
         }
 
         public async Task<bool> CreateAsync(string url, T objToCreate)
@@ -47,9 +63,19 @@ namespace ParkyWeb.Repository
             return response.StatusCode == HttpStatusCode.Created;
         }
 
-        public Task<bool> UpdateAsync(string url, T objToUpdate)
+        public async Task<bool> UpdateAsync(string url, T objToUpdate)
         {
-            throw new System.NotImplementedException();
+            var request = new HttpRequestMessage(HttpMethod.Patch, url);
+
+            if (objToUpdate == null) return false;
+
+            request.Content = new StringContent(
+                JsonConvert.SerializeObject(objToUpdate), Encoding.UTF8, "application/json");
+
+            var client = _clientFactory.CreateClient();
+            var response = await client.SendAsync(request);
+
+            return response.StatusCode == HttpStatusCode.NoContent;
         }
 
         public async Task<bool> DeleteAsync(string url, int id)
