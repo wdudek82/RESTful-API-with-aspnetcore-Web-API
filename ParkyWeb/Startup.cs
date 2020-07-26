@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using ParkyWeb.Repository;
+using ParkyWeb.Repository.IRepository;
 
 namespace ParkyWeb
 {
@@ -18,6 +20,9 @@ namespace ParkyWeb
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<INationalParkRepository, NationalParkRepository>();
+            services.AddScoped<ITrailRepository, TrailRepository>();
+
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
             services.AddHttpClient();
         }
