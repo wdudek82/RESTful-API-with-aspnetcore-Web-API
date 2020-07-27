@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -40,7 +41,6 @@ namespace ParkyWeb.Repository
             if (response.StatusCode != HttpStatusCode.OK) return null;
 
             var jsonString = await response.Content.ReadAsStringAsync();
-
             return JsonConvert.DeserializeObject<IEnumerable<T>>(jsonString);
         }
 
