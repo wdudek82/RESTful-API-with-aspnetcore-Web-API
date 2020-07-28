@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -83,13 +82,13 @@ namespace ParkyWeb.Controllers
             }
 
             return RedirectToAction(nameof(Index));
-
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _npRepo.DeleteAsync(StaticDetails.NationalParksApiPath, id);
-            return RedirectToAction(nameof(Index));
+            var status = await _npRepo.DeleteAsync(StaticDetails.NationalParksApiPath, id);
+            var infix = status ? "" : "Not";
+            return Json(new {success = status, message = $"Delete {infix} Successful"});
         }
     }
 }
