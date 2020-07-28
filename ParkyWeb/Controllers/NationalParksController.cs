@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ParkyWeb.Models;
@@ -14,7 +15,6 @@ namespace ParkyWeb.Controllers
             _npRepo = npRepo;
         }
 
-        // GET
         public IActionResult Index()
         {
             return View(new NationalPark());
@@ -26,6 +26,26 @@ namespace ParkyWeb.Controllers
             {
                 data = await _npRepo.GetAllAsync(StaticDetails.NationalParksApiPath)
             });
+        }
+
+        public async Task<IActionResult> Upsert(int? id)
+        {
+            Console.WriteLine("=== Upsert");
+
+            var nationalPark = new NationalPark();
+            if (id == null)
+            {
+                return View(nationalPark);
+            }
+
+            nationalPark = await _npRepo.GetAsync(StaticDetails.NationalParksApiPath, id.GetValueOrDefault());
+            Console.WriteLine($"=== NP id: {nationalPark.Id}");
+            if (nationalPark == null)
+            {
+                return NotFound();
+            }
+
+            return View(nationalPark);
         }
     }
 }
