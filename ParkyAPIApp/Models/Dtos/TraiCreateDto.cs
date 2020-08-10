@@ -10,6 +10,9 @@ namespace ParkyAPIApp.Models.Dtos
         [Required]
         public double Distance { get; set; }
 
+        [Required]
+        public double Elevation { get; set; }
+
         public Trail.DifficultyType Difficulty { get; set; }
 
         public int NationalParkId { get; set; }
