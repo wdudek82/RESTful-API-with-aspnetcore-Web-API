@@ -33,7 +33,8 @@ namespace ParkyWeb.Controllers
                 {
                     Text = i.Name,
                     Value = i.Id.ToString()
-                })
+                }),
+                Trail = new Trail()
             };
 
             if (id == null)
@@ -55,9 +56,19 @@ namespace ParkyWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Upsert(TrailsVm trailsVm)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                return View(trailsVm);
+                var npList = await _npRepo.GetAllAsync(StaticDetails.NationalParksApiPath);
+                var objVm = new TrailsVm
+                {
+                    NationalParkList = npList.Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString()
+                    }),
+                    Trail = trailsVm.Trail
+                };
+                return View(objVm);
             }
 
             if (trailsVm.Trail.Id == 0)
@@ -68,7 +79,6 @@ namespace ParkyWeb.Controllers
             {
                 await _trailRepo.UpdateAsync(StaticDetails.TrailsApiPath, trailsVm.Trail);
             }
-
             return RedirectToAction(nameof(Index));
         }
 
