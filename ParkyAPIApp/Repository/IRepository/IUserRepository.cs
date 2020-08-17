@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using ParkyAPIApp.Models;
 
 namespace ParkyAPIApp.Repository.IRepository
