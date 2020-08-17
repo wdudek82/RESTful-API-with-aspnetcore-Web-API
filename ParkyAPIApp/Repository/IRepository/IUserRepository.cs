@@ -5,18 +5,10 @@ namespace ParkyAPIApp.Repository.IRepository
 {
     public interface IUserRepository
     {
-        IEnumerable<User> GetUsers();
+        bool IsUniqueUser(string username);
 
-        User GetUserById(int userId);
+        User Authenticate(string username, string password);
 
-        bool UserExists(string username);
-
-        bool CreateUser(User user);
-
-        bool UpdateUser(User user);
-
-        bool DeleteUser(User user);
-
-        bool Save();
+        User Register(string username, string password);
     }
 }
