@@ -5,13 +5,14 @@ using ParkyAPIApp.Repository.IRepository;
 
 namespace ParkyAPIApp.Controllers
 {
+    [Authorize]
     [Route("api/v{version:apiVersion}/users")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
 
-        public UserController(IUserRepository userRepo)
+        public UsersController(IUserRepository userRepo)
         {
             _userRepo = userRepo;
         }
