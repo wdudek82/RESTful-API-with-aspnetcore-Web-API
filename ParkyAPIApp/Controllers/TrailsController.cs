@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ParkyAPIApp.Models;
@@ -46,6 +47,7 @@ namespace ParkyAPIApp.Controllers
         /// </summary>
         /// <param name="id">The Id of the trail</param>
         /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id:int}", Name = "GetTrail")]
         [ProducesResponseType(200, Type = typeof(Trail))]
         [ProducesResponseType(404)]

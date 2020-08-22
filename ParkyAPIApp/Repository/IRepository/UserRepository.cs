@@ -24,7 +24,7 @@ namespace ParkyAPIApp.Repository.IRepository
 
         public bool IsUniqueUser(string username)
         {
-            return _db.Users.AsEnumerable().Any(u => Normalize(u.Username) == Normalize(username));
+            return _db.Users.AsEnumerable().All(u => Normalize(u.Username) != Normalize(username));
         }
 
         public User Authenticate(string username, string password)
@@ -43,7 +43,8 @@ namespace ParkyAPIApp.Repository.IRepository
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString())
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(
@@ -65,7 +66,7 @@ namespace ParkyAPIApp.Repository.IRepository
             {
                 Username = username,
                 Password = password,
-                // Role = ""
+                Role = "User"
             };
 
             _db.Users.Add(user);
