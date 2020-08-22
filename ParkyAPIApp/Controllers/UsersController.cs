@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ParkyAPIApp.Models;
@@ -28,6 +29,25 @@ namespace ParkyAPIApp.Controllers
             }
 
             return Ok(user);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("register")]
+        public IActionResult Register([FromBody] User model)
+        {
+            if (!_userRepo.IsUniqueUser(model.Username))
+            {
+                return BadRequest(new {message = "User already exists"});
+            }
+
+            var user = _userRepo.Register(model.Username, model.Password);
+
+            if (user == null)
+            {
+                return BadRequest(new {message = "Error while registering"});
+            }
+
+            return Ok();
         }
     }
 }

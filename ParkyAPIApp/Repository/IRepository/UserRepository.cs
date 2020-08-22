@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using ParkyAPIApp.Data;
@@ -24,7 +24,7 @@ namespace ParkyAPIApp.Repository.IRepository
 
         public bool IsUniqueUser(string username)
         {
-            return _db.Users.Any(u => Normalize(u.Username) == Normalize(username));
+            return _db.Users.AsEnumerable().Any(u => Normalize(u.Username) == Normalize(username));
         }
 
         public User Authenticate(string username, string password)
@@ -59,15 +59,19 @@ namespace ParkyAPIApp.Repository.IRepository
 
         public User Register(string username, string password)
         {
+
+
             var user = new User
             {
                 Username = username,
                 Password = password,
-                Role = ""
+                // Role = ""
             };
 
             _db.Users.Add(user);
             _db.SaveChanges();
+
+            user.Password = "";
 
             return user;
         }
