@@ -27,18 +27,21 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                    </li>
-                    @if (HttpAccessor.HttpContext.Session.GetString("JWToken") != null &&
-                         HttpAccessor.HttpContext.Session.GetString("JWToken").Length > 0)
+                    @if (User.IsInRole("Admin") || User.IsInRole("Test"))
                     {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="NationalParks" asp-action="Index">National Park</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Trails" asp-action="Index">Trails</a>
                         </li>
+                    }
+                    @if (HttpAccessor.HttpContext.Session.GetString("JWToken") != null &&
+                         HttpAccessor.HttpContext.Session.GetString("JWToken").Length > 0)
+                    {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Home" asp-action="Logout">Logout</a>
                         </li>

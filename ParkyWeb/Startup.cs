@@ -75,9 +75,8 @@ namespace ParkyWeb
                 .AllowAnyHeader());
 
             app.UseSession();
-
-            app.UseAuthorization();
             app.UseAuthentication(); // optional?
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

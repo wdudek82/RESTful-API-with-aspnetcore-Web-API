@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ParkyWeb.Models;
@@ -24,6 +25,7 @@ namespace ParkyWeb.Controllers
             return View(new Trail());
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Upsert(int? id)
         {
             var npList = await _npRepo.GetAllAsync(StaticDetails.NationalParksApiPath);
@@ -91,6 +93,7 @@ namespace ParkyWeb.Controllers
             );
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var status = await _trailRepo.DeleteAsync(StaticDetails.TrailsApiPath, id);
