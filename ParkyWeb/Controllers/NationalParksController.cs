@@ -1,5 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ParkyWeb.Models;
 using ParkyWeb.Repository.IRepository;
@@ -24,7 +25,7 @@ namespace ParkyWeb.Controllers
         {
             return Json(new
             {
-                data = await _npRepo.GetAllAsync(StaticDetails.NationalParksApiPath)
+                data = await _npRepo.GetAllAsync(StaticDetails.NationalParksApiPath,  GetToken())
             });
         }
 
@@ -36,7 +37,7 @@ namespace ParkyWeb.Controllers
                 return View(nationalPark);
             }
 
-            nationalPark = await _npRepo.GetAsync(StaticDetails.NationalParksApiPath, id.GetValueOrDefault());
+            nationalPark = await _npRepo.GetAsync(StaticDetails.NationalParksApiPath, id.GetValueOrDefault(),  GetToken());
             if (nationalPark == null)
             {
                 return NotFound();
@@ -68,17 +69,17 @@ namespace ParkyWeb.Controllers
             }
             else
             {
-                var objFromDb = await _npRepo.GetAsync(StaticDetails.NationalParksApiPath, nationalPark.Id);
+                var objFromDb = await _npRepo.GetAsync(StaticDetails.NationalParksApiPath, nationalPark.Id,  GetToken());
                 nationalPark.Picture = objFromDb.Picture;
             }
 
             if (nationalPark.Id == 0)
             {
-                await _npRepo.CreateAsync(StaticDetails.NationalParksApiPath, nationalPark);
+                await _npRepo.CreateAsync(StaticDetails.NationalParksApiPath, nationalPark,  GetToken());
             }
             else
             {
-                await _npRepo.UpdateAsync(StaticDetails.NationalParksApiPath + nationalPark.Id, nationalPark);
+                await _npRepo.UpdateAsync(StaticDetails.NationalParksApiPath + nationalPark.Id, nationalPark,  GetToken());
             }
 
             return RedirectToAction(nameof(Index));
@@ -86,9 +87,14 @@ namespace ParkyWeb.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var status = await _npRepo.DeleteAsync(StaticDetails.NationalParksApiPath, id);
+            var status = await _npRepo.DeleteAsync(StaticDetails.NationalParksApiPath, id, GetToken());
             var infix = status ? "" : "Not";
             return Json(new {success = status, message = $"Delete {infix} Successful"});
+        }
+
+        private string GetToken()
+        {
+            return HttpContext.Session.GetString("JWToken");
         }
     }
 }
