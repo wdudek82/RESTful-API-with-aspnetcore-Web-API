@@ -71,6 +71,9 @@ namespace ParkyWeb.Controllers
 
             HttpContext.Session.SetString("JWToken", user.Token);
 
+            // Just testing TempData
+            TempData["alert"] = $"Welcome {user.Username}";
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -89,6 +92,9 @@ namespace ParkyWeb.Controllers
             {
                 return View();
             }
+
+            // Just testing TempData
+            TempData["alert"] = "Registration Successful!";
 
             return RedirectToAction(nameof(Login));
         }
