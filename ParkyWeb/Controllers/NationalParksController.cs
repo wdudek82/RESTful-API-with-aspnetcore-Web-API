@@ -94,7 +94,7 @@ namespace ParkyWeb.Controllers
 
         private string GetToken()
         {
-            return HttpContext.Session.GetString("JWToken");
+            return HttpContext.Session.GetString("JWToken") ?? "";
         }
     }
 }

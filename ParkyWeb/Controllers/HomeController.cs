@@ -1,5 +1,8 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ParkyWeb.Models;
@@ -60,6 +63,12 @@ namespace ParkyWeb.Controllers
                 return View();
             }
 
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.Username));
+            identity.AddClaim(new Claim(ClaimTypes.Role, user.Role));
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
             HttpContext.Session.SetString("JWToken", user.Token);
 
             return RedirectToAction(nameof(Index));
@@ -84,8 +93,15 @@ namespace ParkyWeb.Controllers
             return RedirectToAction(nameof(Login));
         }
 
-        public IActionResult Logout()
+        [HttpGet]
+        public IActionResult AccessDenied()
         {
+            return View();
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync();
             HttpContext.Session.SetString("JWToken", "");
             return RedirectToAction(nameof(Index));
         }
